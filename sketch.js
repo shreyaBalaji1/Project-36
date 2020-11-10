@@ -2,11 +2,18 @@
 var dog, dogImg, happyDogImg, database, foodS, foodStock, foodObj;
 var feed, addFood;
 var fedTime, lastFed;
+var readState;
+var bedroomImg, gardenImg, washroomImg;
+var currentTime;
+var gameState;
 
 function preload() {
   //load images here
   dogImg = loadImage("images/dogImg.png");
   happyDogImg = loadImage("images/dogImg1.png");
+  bedroomImg = loadImage("virtual pet images/Bed Room.png");
+  gardenImg = loadImage("virtual pet images/Garden.png");
+  bedroomImg = loadImage("virtual pet images/Wash Room.png");
 }
 
 function setup() {
@@ -30,6 +37,11 @@ function setup() {
   addFood = createButton("Add Food");
   addFood.position(230,15);
   addFood.mousePressed(addFoods);
+
+  readState = database.ref('gameState');
+  readState.on("value", function(data) {
+    gameState = data.val();
+  });
 }
 
 
@@ -61,6 +73,35 @@ function draw() {
   fill("white");
   //text("NOTE:Press UP_ARROW key to feed Drago milk!", 75, 50);
   text("Food remaining:" + foodS, 180, 390);
+
+  if(gameState != "Hungry") {
+    feed.hide();
+    addFood.hide();
+    dog.remove();
+  }
+  else {
+    feed.show();
+    addFood.show();
+    dog.addImage(dogImg);
+  }
+
+  currentTime = hour();
+  if(currentTime == (lastFed+1)) {
+    updateState("Playing");
+    foodObj.garden();
+  }
+  else if(currentTime == (lastFed+2)) {
+    updateState("Sleeping");
+    foodObj.bedroom();
+  }
+  else if(currentTime > (lastFed+2) && currentTime <= (lastFed+4)) {
+    updateState("Bathing");
+    foodObj.washroom();
+  }
+  else{
+    updateState("Hungry");
+    foodObj.display();
+  }
 }
 
 function readStock(data) {
@@ -84,5 +125,11 @@ function feedDog() {
     Food: foodObj.getFoodStock(),
     FeedTime: hour()
   })
+}
+
+function updateState(state) {
+  database.ref('/').update({
+    gameState: state
+  });
 }
 
