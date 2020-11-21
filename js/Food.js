@@ -7,7 +7,7 @@ class food {
         this.width = width;
         this.height = height;
         */
-        this.image = this.image = loadImage("images/milk.png");
+        this.image = loadImage("images/milk.png");
        //World.add(world, this.body);
     }
 

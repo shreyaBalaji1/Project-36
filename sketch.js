@@ -77,7 +77,7 @@ function draw() {
   if(gameState != "Hungry") {
     feed.hide();
     addFood.hide();
-    dog.remove();
+    //dog.remove();
   }
   else {
     feed.show();
